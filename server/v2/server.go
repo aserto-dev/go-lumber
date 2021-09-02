@@ -98,7 +98,7 @@ func newServer(
 
 	cfg := internal.Config{
 		TLS:     o.tls,
-		Handler: internal.DefaultHandler(o.keepalive, mkRW),
+		Handler: internal.DefaultHandler(o.keepalive, mkRW, o.pipelining),
 		Channel: o.ch,
 	}
 

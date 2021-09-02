@@ -30,13 +30,14 @@ import (
 type Option func(*options) error
 
 type options struct {
-	timeout   time.Duration
-	keepalive time.Duration
-	decoder   jsonDecoder
-	tls       *tls.Config
-	v1        bool
-	v2        bool
-	ch        chan *lj.Batch
+	timeout    time.Duration
+	keepalive  time.Duration
+	decoder    jsonDecoder
+	tls        *tls.Config
+	v1         bool
+	v2         bool
+	ch         chan *lj.Batch
+	pipelining int
 }
 
 type jsonDecoder func([]byte, interface{}) error
@@ -106,14 +107,27 @@ func V2(b bool) Option {
 	}
 }
 
+// Pipelining determines the number of unacknowledged batches that can be processed
+// per connection.
+func Pipelining(pipelining int) Option {
+	return func(opt *options) error {
+		if pipelining < 0 {
+			return errors.New("pipelining must not be negative")
+		}
+		opt.pipelining = pipelining
+		return nil
+	}
+}
+
 func applyOptions(opts []Option) (options, error) {
 	o := options{
-		decoder:   json.Unmarshal,
-		timeout:   30 * time.Second,
-		keepalive: 3 * time.Second,
-		v1:        true,
-		v2:        true,
-		tls:       nil,
+		decoder:    json.Unmarshal,
+		timeout:    30 * time.Second,
+		keepalive:  3 * time.Second,
+		v1:         true,
+		v2:         true,
+		tls:        nil,
+		pipelining: 0,
 	}
 
 	for _, opt := range opts {

@@ -30,11 +30,12 @@ import (
 type Option func(*options) error
 
 type options struct {
-	timeout   time.Duration
-	keepalive time.Duration
-	decoder   jsonDecoder
-	tls       *tls.Config
-	ch        chan *lj.Batch
+	timeout    time.Duration
+	keepalive  time.Duration
+	decoder    jsonDecoder
+	tls        *tls.Config
+	ch         chan *lj.Batch
+	pipelining int
 }
 
 // Keepalive configures the keepalive interval returning an ACK of length 0 to
@@ -82,6 +83,18 @@ func TLS(tls *tls.Config) Option {
 func JSONDecoder(decoder func([]byte, interface{}) error) Option {
 	return func(opt *options) error {
 		opt.decoder = decoder
+		return nil
+	}
+}
+
+// Pipelining determines the number of unacknowledged batches that can be processed
+// per connection.
+func Pipelining(pipelining int) Option {
+	return func(opt *options) error {
+		if pipelining < 0 {
+			return errors.New("pipelining must not be negative")
+		}
+		opt.pipelining = pipelining
 		return nil
 	}
 }

@@ -53,6 +53,7 @@ type ProtocolFactory func(conn net.Conn) (BatchReader, ACKWriter, error)
 func DefaultHandler(
 	keepalive time.Duration,
 	mk ProtocolFactory,
+	pipelining int,
 ) HandlerFactory {
 	return func(cb Eventer, client net.Conn) (Handler, error) {
 		r, w, err := mk(client)
@@ -67,7 +68,7 @@ func DefaultHandler(
 			writer:    w,
 			keepalive: keepalive,
 			signal:    make(chan struct{}),
-			ch:        make(chan *lj.Batch),
+			ch:        make(chan *lj.Batch, pipelining),
 		}, nil
 	}
 }

@@ -26,8 +26,8 @@ import (
 
 	"github.com/elastic/go-lumber/lj"
 	"github.com/elastic/go-lumber/log"
-	"github.com/elastic/go-lumber/server/v1"
-	"github.com/elastic/go-lumber/server/v2"
+	v1 "github.com/elastic/go-lumber/server/v1"
+	v2 "github.com/elastic/go-lumber/server/v2"
 )
 
 // Server serves multiple lumberjack clients.
@@ -170,7 +170,8 @@ func newServer(l net.Listener, opts ...Option) (Server, error) {
 				v2.Timeout(cfg.timeout),
 				v2.Channel(cfg.ch),
 				v2.TLS(cfg.tls),
-				v2.JSONDecoder(cfg.decoder))
+				v2.JSONDecoder(cfg.decoder),
+				v2.Pipelining(cfg.pipelining))
 			return s, '2', err
 		})
 	}
