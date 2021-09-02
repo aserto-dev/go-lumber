@@ -26,8 +26,8 @@ import (
 
 	"github.com/elastic/go-lumber/lj"
 	"github.com/elastic/go-lumber/log"
-	v1 "github.com/elastic/go-lumber/server/v1"
-	v2 "github.com/elastic/go-lumber/server/v2"
+	"github.com/elastic/go-lumber/server/v1"
+	"github.com/elastic/go-lumber/server/v2"
 )
 
 // Server serves multiple lumberjack clients.
